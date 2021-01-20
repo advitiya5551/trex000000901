@@ -35,18 +35,25 @@ function preload() {
 }
 
 function setup() {
-  canvas=createCanvas(displayWidth -20,displayHeight-30);
-
+  canvas = createCanvas(displayWidth - 20, displayHeight - 30);
+ jump = createSprite(900,30,1800,0.1);
   trex = createSprite(50, 180, 20, 50);
   trex.addAnimation("running", trex_running);
   trex.addAnimation("collided", trex_collided);
-  trex.scale = 0.5;
+  trex.scale = 0.6;
+  
+    camera.position.x = trex.x  +700; 
+    camera.position.y = trex.y ;
+  
+
+  //camera.position.x = displayWidth / 2;
+  //camera.position.y = trex.y
 
   ground = createSprite(200, 180, 400, 20);
   ground.addImage("ground", groundImage);
-  ground.x = ground.width / 2;
+  ground.x = ground.width / 3;
   ground.velocityX = -4;
-
+  ground.scale = 2
   invisibleGround = createSprite(200, 190, 400, 10);
   invisibleGround.visible = false;
 
@@ -63,26 +70,32 @@ function setup() {
   obstaclesGroup = new Group();
 
   score = 0;
+
 }
 
 function draw() {
   background(180);
 
-  text("Score: " + score, 500, 50);
+  text("Score: " + score, 900, 50);
 
   if (gameState === PLAY) {
     score = score + Math.round(getFrameRate() / 60);
 
-    if (keyDown("space")) {
-      trex.velocityY = -10;
-    }
+    if ( keyDown("j")) {
+      trex.velocityY = -13;
+     }
+    
+
+    
 
     trex.velocityY = trex.velocityY + 0.8
 
-    if (ground.x < 0) {
-      ground.x = ground.width / 2;
+    if (ground.x < 2) {
+      ground.x = ground.width / 3;
     }
 
+jump.visible=false;
+trex.bounceOff(jump)
     trex.collide(invisibleGround);
     spawnClouds();
     spawnObstacles();
@@ -104,37 +117,40 @@ function draw() {
     obstaclesGroup.setLifetimeEach(-1);
     cloudsGroup.setLifetimeEach(-1);
     if (mousePressedOver(restart)) {
+      console.log("restart pressed")
       reset();
     }
   }
-
+  text("Press J to Jump", 900, 500)
+  //console.log(trex.y)
   drawSprites();
 
- 
-  
+
+
 }
 
- function reset() {
-    gameState = PLAY;
-    gameOver.visible = false;
-    restart.visible = false;
-    obstaclesGroup.destroyEach();
-    cloudsGroup.destroyEach();
-    trex.changeAnimation("running", trex_running);
-    score = 0;
- }
+function reset() {
+  //console.log("in reset")
+  gameState = PLAY;
+  gameOver.visible = false;
+  restart.visible = false;
+  obstaclesGroup.destroyEach();
+  cloudsGroup.destroyEach();
+  trex.changeAnimation("running", trex_running);
+  score = 0;
+}
 
 function spawnClouds() {
   //write code here to spawn the clouds
   if (frameCount % 60 === 0) {
-    var cloud = createSprite(600, 120, 40, 10);
+    var cloud = createSprite(2000, 120, 40, 10);
     cloud.y = Math.round(random(80, 120));
     cloud.addImage(cloudImage);
     cloud.scale = 0.5;
     cloud.velocityX = -3;
 
     //assign lifetime to the variable
-    cloud.lifetime = 200;
+    cloud.lifetime = 3000;
 
     //adjust the depth
     cloud.depth = trex.depth;
@@ -148,37 +164,44 @@ function spawnClouds() {
 
 function spawnObstacles() {
   if (frameCount % 60 === 0) {
-    var obstacle = createSprite(600, 165, 10, 40);
-    obstacle.velocityX = -4;
+    var obstacle = createSprite(2000, 165, 5, 40);
+    obstacle.velocityX = -5;
 
     //generate random obstacles
     var rand = Math.round(random(1, 6));
     switch (rand) {
       case 1:
         obstacle.addImage(obstacle1);
+        obstacle1.scale = 0.5;
         break;
       case 2:
         obstacle.addImage(obstacle2);
+        obstacle2.scale = 0.5;
         break;
       case 3:
         obstacle.addImage(obstacle3);
+        obstacle3.scale = 0.5;
         break;
       case 4:
         obstacle.addImage(obstacle4);
+        obstacle4.scale = 0.5;
         break;
       case 5:
         obstacle.addImage(obstacle5);
+        obstacle5.scale = 0.5;
         break;
       case 6:
         obstacle.addImage(obstacle6);
+        obstacle6.scale = 0.5;
         break;
       default:
         break;
+
     }
 
     //assign scale and lifetime to the obstacle           
     obstacle.scale = 0.5;
-    obstacle.lifetime = 300;
+    obstacle.lifetime = 30000;
     //add each obstacle to the group
     obstaclesGroup.add(obstacle);
   }
